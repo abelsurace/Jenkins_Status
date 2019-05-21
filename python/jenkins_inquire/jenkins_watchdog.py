@@ -1,6 +1,6 @@
 import subprocess
 
-from mqtt_wrapper import State, MQTTBroadcast
+from jenkins_inquire.mqtt_wrapper import State, MQTTBroadcast
 import os
 import logging
 

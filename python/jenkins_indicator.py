@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 
 import argparse
@@ -6,9 +6,7 @@ import json
 import logging.handlers
 import copy
 from os.path import dirname
-
-from jenkins_inquire.jenkins_watchdog import TTSFailureObserver, VoiceWatcher
-# Initlogging
+from jenkins_inquire.jenkins_watchdog import TTSFailureObserver
 from jenkins_inquire import jenkins_poller
 
 log = logging.getLogger('jenkins_indicator')
