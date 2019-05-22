@@ -4,6 +4,6 @@ Jenkins_indicator.py is the main program to be run from this project, this will 
 The application can be run as follows: 
 ```python jenkins_indicator.py --indicator_config ../config/indicator_config.json --server_config ../config/server_config.json --interval 10```
 
-The configuration files are stored in the config folder and log outputs will be sored in the log folder. 
+The configuration files are stored in the config folder and log outputs will be stored in the log folder. 
 
 
