@@ -15,6 +15,7 @@ def poll(server=None, user=None, password=None, configuration=None, observers=No
     )
 
     jenkinsserver.observe_jobs(configuration.keys())
+    jenkinsserver.observe_jobs_checked(configuration.keys())
 
     while True:
         try:
