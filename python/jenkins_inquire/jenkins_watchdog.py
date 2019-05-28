@@ -72,12 +72,12 @@ class TTSFailureObserver(Watcher):
             if previous_good and (not now_ok):
                 message = '{} - Build has been broken'.format(description)
                 log.debug("Speaking message :{}".format(message))
-                command = template_fail.format(message)
+                command = template_fail.format(name + message)
                 log.debug("running command =" + command)
                 os.system(command)
             if (not previous_good) and now_ok:
                 message = '{} - Build is back to normal'.format(description)
-                log.debug("Speaking message :{}".format(message))
+                log.debug("Speaking message :{}".format(name + message))
                 command = template_success.format(message)
                 log.debug("running command =" + command)
                 os.system(command)

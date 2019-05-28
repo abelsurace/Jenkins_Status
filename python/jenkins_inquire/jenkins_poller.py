@@ -1,18 +1,35 @@
 import datetime
 import time
-from jenkins_inquire.jenkins import JenkinsWrapper
+import sys
+from jenkins import JenkinsWrapper
 from requests.exceptions import ConnectionError, HTTPError
 import logging
 
 log = logging.getLogger('jenkins_indicator')
 
 
-def poll(server=None, user=None, password=None, configuration=None, observers=None, interval=None):
-    jenkinsserver = JenkinsWrapper(
+def poll(server=None, user=None, password=None, configuration=None, observers=None, interval=None, list_jobs=None):
+    try:
+        jenkinsserver = JenkinsWrapper(
         jenkins_url=server,
         username=user,
         password=password
     )
+    except HTTPError:
+        log.error ("\033[1;31;40m invalid server URL")
+        sys.exit(1)
+    except ConnectionError:
+        log.info ("\033[1;31;40m Cant connect to provided server, verify the Username and password")
+        sys.exit(1)
+
+    if list_jobs == True:
+        all_jobs=jenkinsserver.jenkins.get_jobs_list()
+        log.info("\033[1;32;35m All mavailable jobs")
+        j=0
+        for j in range (0, len(all_jobs), 2):
+            print("\033[1;32;40m" + '"' + all_jobs[j] +'": '+ str(j/2) + ",")
+        sys.exit(1)
+        
 
     jenkinsserver.observe_jobs(configuration.keys())
     jenkinsserver.observe_jobs_checked(configuration.keys())

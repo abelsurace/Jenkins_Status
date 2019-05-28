@@ -2,6 +2,7 @@
 
 
 import argparse
+import optparse
 import json
 import logging.handlers
 import copy
@@ -28,12 +29,12 @@ log.addHandler(ch)
 ROOT_DIR = dirname(__file__)
 
 # Parsing arguments
-
 parser = argparse.ArgumentParser(description='Pulls jenkins and delivers notifications')
-parser.add_argument("--indicator_config", type=argparse.FileType("r"), required=True)
-parser.add_argument("--server_config", required=True, type=argparse.FileType('r'),
-                    help='File containing server connection details')
-parser.add_argument("--interval", default=10, help="Pooling Interval defaults to 10 seconds")
+parser.add_argument("--indicator_config", "-ic", type=argparse.FileType("r"), default="../config/indicator_config.json", help="Defaults to ../config/indicator_config.json")
+parser.add_argument("--server_config", "-sc", type=argparse.FileType('r'),
+                    default="../config/server_config.json", help="Defaults to ../config/server_config.json")
+parser.add_argument("--interval", "-i", default=10, help="Pooling Interval defaults to 10 seconds")
+parser.add_argument("--list_jobs", "-l", action="store_true", dest="list_jobs", default= False , help="List all jobs available from server")
 arguments = parser.parse_args()
 log.info("Startup arguments:  indicator = {} , server={} ".format(arguments.indicator_config.name,
                                                                   arguments.server_config.name))
@@ -53,4 +54,4 @@ with arguments.server_config as json_file:
 observers = [TTSFailureObserver(indicator_config)]
 
 jenkins_poller.poll(server_config['url'], server_config['user'], server_config['password'], indicator_config, observers,
-                    arguments.interval)
+                    arguments.interval, arguments.list_jobs)
