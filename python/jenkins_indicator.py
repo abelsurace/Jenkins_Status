@@ -52,7 +52,7 @@ parser = argparse.ArgumentParser(description='Pulls jenkins and delivers notific
 parser.add_argument("--indicator_config", "-ic", type=argparse.FileType("r"), default="../config/indicator_config.json", help="Defaults to ../config/indicator_config.json")
 parser.add_argument("--server_config", "-sc", type=argparse.FileType('r'),
                     default="../config/server_config.json", help="Defaults to ../config/server_config.json")
-parser.add_argument("--interval", "-i", default=10, help="Pooling Interval defaults to 10 seconds")
+parser.add_argument("--interval", "-i", default=3, help="Pooling Interval defaults to 10 seconds")
 parser.add_argument("--list_jobs", "-l", action="store_true", dest="list_jobs", default= False , help="List all jobs available from server")
 arguments = parser.parse_args()
 log.info("Startup arguments:  indicator = {} , server={} ".format(arguments.indicator_config.name,

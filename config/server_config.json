@@ -1,5 +1,5 @@
 {
-  "url": "http://172.23.17.33/jenkins",
+  "url": "http://localhost:8080" ,
   "user": "",
   "password": ""
 }
