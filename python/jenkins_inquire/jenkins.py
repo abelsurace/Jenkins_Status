@@ -1,6 +1,7 @@
 from jenkinsapi.jenkins import Jenkins
 from jenkinsapi.custom_exceptions import NoBuildData
 import logging
+import itertools
 import sys
 log = logging.getLogger('jenkins_indicator')
 
@@ -9,6 +10,7 @@ class JenkinsWrapper(object):
         self.jenkins_url = jenkins_url
         self.jenkins = Jenkins(jenkins_url, username=username, password=password)
         self.jobs_names = []
+        self.jobs_topic = {}
 
     def observe_jobs_checked(self, jobs_names):
         log.info( 'ALL JENKINS JOBS:')
@@ -27,6 +29,12 @@ class JenkinsWrapper(object):
         self.observe_jobs(jobs_names)
         return True
 
+    def init_jobs_topic(self, jobs_names, jobs_topic):
+        for name, topic in itertools.izip(jobs_names, jobs_topic):
+            self.jobs_topic[name] = topic
+        return jobs_topic
+
+
     def observe_jobs(self, jobs_names):
         self.jobs_names = jobs_names
 
@@ -39,7 +47,7 @@ class JenkinsWrapper(object):
         #log.debug(self.jenkins.get_jobs_list())
         log.debug('OBSERVED JENKINS JOBS:')
         for name in self.jobs_names:
-            log.debug("fetch_observed" + name)
+            log.debug("fetch_observed: " + name)
             try:
                 builds[name] = self.jenkins.get_job(name).get_last_build()
                 completed_builds[name] = self.jenkins.get_job(name).get_last_completed_build()

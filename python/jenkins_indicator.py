@@ -29,7 +29,7 @@ import json
 import logging.handlers
 import copy
 from os.path import dirname
-from jenkins_inquire.jenkins_watchdog import TTSFailureObserver
+from jenkins_inquire.jenkins_watchdog import TTSFailureObserver,  MQTTFailureObserver, MqttBroker
 from jenkins_inquire import jenkins_poller
 
 log = logging.getLogger('jenkins_indicator')
@@ -67,10 +67,14 @@ with arguments.server_config as json_file:
     server_config = json.load(json_file)
     log.info("Server Configuration loaded:")
     hidden = copy.copy(server_config)
-    hidden[u'password'] = "***"
+    hidden[u'jenkins_server'][u'password'] = "***"
     log.info(hidden)
 
-observers = [TTSFailureObserver(indicator_config)]
+log.info("info server" + server_config['mqtt_broker']['address'])
 
-jenkins_poller.poll(server_config['url'], server_config['user'], server_config['password'], indicator_config, observers,
-                    arguments.interval, arguments.list_jobs)
+broker = MqttBroker (server_config['mqtt_broker']['address'], server_config['mqtt_broker']['port'], server_config['mqtt_broker']['username'], server_config['mqtt_broker']['password'])
+
+observers =  ([MQTTFailureObserver(broker, indicator_config)])  #[TTSFailureObserver(indicator_config)], MQTTFailureObserver(server_config, indicator_config)]
+
+log.info("POOLER START")
+jenkins_poller.poll(server_config, indicator_config, observers, arguments.interval, arguments.list_jobs)

@@ -8,12 +8,13 @@ import logging
 log = logging.getLogger('jenkins_indicator')
 
 
-def poll(server=None, user=None, password=None, configuration=None, observers=None, interval=None, list_jobs=None):
+def poll(server, configuration=None, observers=None, interval=None, list_jobs=None):
+
     try:
         jenkinsserver = JenkinsWrapper(
-        jenkins_url=server,
-        username=user,
-        password=password
+        jenkins_url=server['jenkins_server']['url'],
+        username=server['jenkins_server']['user'],
+        password=server['jenkins_server']['password']
     )
     except HTTPError:
         log.error ("\033[1;31;40m invalid server URL")
@@ -30,14 +31,21 @@ def poll(server=None, user=None, password=None, configuration=None, observers=No
             print("\033[1;32;40m" + '"' + all_jobs[j] +'": '+ str(j/2) + ",")
         sys.exit(1)
         
-
+    log.info("observe_jobs")
     jenkinsserver.observe_jobs(configuration.keys())
+    log.info(".observe_jobs_checked")
     jenkinsserver.observe_jobs_checked(configuration.keys())
+    log.info("int_jobs_topic")
+    jenkinsserver.init_jobs_topic(configuration.keys(), configuration.values())
+    #print ("Keys:" + str(configuration.keys()))
+    #print ("values" + str(configuration.values()))
 
     while True:
         try:
+            log.info("try getch_observed_projects_data")
             (builds, completed_builds) = jenkinsserver.fetch_observed_projects_data()
             for name, build in builds.items():
+                topic = jenkinsserver.jobs_topic[name]
                 if build is None:
                     for o in observers:
                         o.on_no_info_available(name)
@@ -53,7 +61,7 @@ def poll(server=None, user=None, password=None, configuration=None, observers=No
                     state = {"running": is_running, "is_success": is_success,"is_falure": is_faliure, "result": build._data['result']}
                     log.debug("Project '{}' status : {}".format(name, str(state)))
                     for o in observers:
-                        o.on_new_build_info(name, description, is_success,is_faliure, was_good_previously, is_running, start_time,
+                        o.on_new_build_info(name, topic,  description, is_success,is_faliure, was_good_previously, is_running, start_time,
                                             estimated_time)
             log.debug("Round complete waiting for next pull round in {} seconds".format(interval))
             time.sleep(interval)
